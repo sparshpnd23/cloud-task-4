@@ -1,4 +1,4 @@
-# cloud-task-4
+# Cloud-task-4
 
 # Project Description :-
 
@@ -431,6 +431,10 @@ A security group acts as a virtual firewall for your EC2 instances to control in
  ![](/ct3/done.png)
  
  
+ Now, we go to our AWS dashboard & see our Wordpress & MYSQL running in the EC2 section.
+ 
+ 
+ ![](/ct3/running.png)
  
   We can access our Wordpress site using the Public IP address that is mentioned in the instance description.
  
