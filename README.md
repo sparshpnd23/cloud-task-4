@@ -306,6 +306,90 @@ A security group acts as a virtual firewall for your EC2 instances to control in
               } 
               
               
-              
+         
+         
+ 
+**Step - 8:** Next, we create a NAT gateway to connect our VPC/Network to the internet world. NAT Gateway is a highly available AWS managed service that makes it easy to connect to the Internet from instances within a private subnet in an Amazon Virtual Private Cloud (Amazon VPC). Previously, you needed to launch a NAT instance to enable NAT for instances in a private subnet
+
+
+          resource "aws_eip" "sparsh-ip" {
+            vpc              = true
+            public_ipv4_pool = "amazon"
+          }
+          output "new_output" {
+              value=  aws_eip.sparsh-ip
+          }
+
+
+          resource "aws_nat_gateway" "sparsh_nat_gw" {
+            depends_on    = [aws_eip.sparsh-ip]
+            allocation_id = aws_eip.sparsh-ip.id
+            subnet_id     = aws_subnet.sparsh_public_subnet.id
+
+
+            tags = {
+              Name = "sparsh_nat_gw"
+            }
+          }
+
+
+          resource "aws_route_table" "vp_private_subnet_for_rt" {
+            depends_on = [aws_nat_gateway.sparsh_nat_gw]
+            vpc_id = aws_vpc.sparsh_vpc.id
+            route {
+              cidr_block = "0.0.0.0/0"
+
+              gateway_id = aws_nat_gateway.sparsh_nat_gw.id
+            }
+            tags = {
+              Name = "vp_private_subnet_for_rt"
+            }
+          }
+
+          resource "aws_route_table_association" "vp_private_subnet_for_rt_association" {
+            depends_on = [aws_route_table.vp_private_subnet_for_rt]
+            subnet_id      = aws_subnet.sparsh_private_subnet.id
+            route_table_id = aws_route_table.vp_private_subnet_for_rt.id
+          }
               
  
+
+**Step - 8:** Now, we are ready to go. We launch our Wordpress and MySQL instances using all the resources that we have created above. 
+  
+  **Wordpress* -
+
+            resource "aws_instance" "wordpress" {
+            
+            ami           = "ami-ff82f990"
+            instance_type = "t2.micro"
+            key_name      =  "sparsh_key"
+            subnet_id     = "${aws_subnet.sparsh_public_subnet.id}"
+            security_groups = ["${aws_security_group.sparsh_sg.id}"]
+            associate_public_ip_address = true
+            availability_zone = "ap-south-1a"
+
+
+            tags = {
+              Name = "sparsh_wordpress"
+              }
+            } 
+
+
+
+
+ **MySQL** -
+ 
+                        resource "aws_instance" "sql" {
+                        ami             =  "ami-08706cb5f68222d09"
+                        instance_type   =  "t2.micro"
+                        key_name        =  "sparsh_key"
+                        subnet_id     = "${aws_subnet.sparsh_private_subnet.id}"
+                        availability_zone = "ap-south-1a"
+                        security_groups = ["${aws_security_group.sparsh_sg_private.id}"]
+                        
+                        tags = {
+                         Name = "sparsh_sql"
+                         }
+                       } 
+                       
+                       
