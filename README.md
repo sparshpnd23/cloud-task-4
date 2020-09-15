@@ -24,6 +24,12 @@ Don't forgot to add auto ip assign and auto dns name assignment option to be ena
 WordPress (WP, WordPress.org) is a free and open-source content management system (CMS) written in PHP and paired with a MySQL or MariaDB database. Features include a plugin architecture and a template system, referred to within WordPress as Themes. WordPress was originally created as a blog-publishing system but has evolved to support other types of web content including more traditional mailing lists and forums, media galleries, membership sites, learning management systems (LMS) and online stores. WordPress is used by more than 60 million websites, including 33.6% of the top 10 million websites as of April 2019, WordPress is one of the most popular content management system solutions in use. WordPress has also been used for other application domains such as pervasive display systems (PDS).
 
 
+# What is Bastion Host ?
+
+A bastion host is a special-purpose computer on a network specifically designed and configured to withstand attacks. The computer generally hosts a single application, for example a proxy server, and all other services are removed or limited to reduce the threat to the computer. . It is hardened in this manner primarily due to its location and purpose, which is either on the outside of a firewall or in a demilitarized zone (DMZ) and usually involves access from untrusted networks or computers.
+A bastion host is a server whose purpose is to provide access to a private network from an external network, such as the Internet. Because of its exposure to potential attack, a bastion host must minimize the chances of penetration. For example, you can use a bastion host to mitigate the risk of allowing SSH 
+
+
 # Steps :-
 
 **Step - 1:**  First of all, configure your AWS profile in your local system using cmd. Fill your details & press Enter.
@@ -386,6 +392,7 @@ A security group acts as a virtual firewall for your EC2 instances to control in
                         subnet_id     = "${aws_subnet.sparsh_private_subnet.id}"
                         availability_zone = "ap-south-1a"
                         security_groups = ["${aws_security_group.sparsh_sg_private.id}"]
+                        depends_on      = [aws_security_group.bastion_host_sql_only,aws_security_group.bastion_ssh_only]
                         
                         tags = {
                          Name = "sparsh_sql"
@@ -393,3 +400,46 @@ A security group acts as a virtual firewall for your EC2 instances to control in
                        } 
                        
                        
+**Bastion Host**
+
+              resource "aws_instance" "bastion_host" {
+                            depends_on=[aws_security_group.bastion_ssh_only]
+                            ami             =  "ami-08706cb5f68222d09"
+                            instance_type   =  "t2.micro"
+                            key_name        =  "task4"
+                            subnet_id= aws_subnet.sparsh_public_subnet.id 
+                            vpc_security_group_ids=[aws_security_group.bastion_ssh_only.id]
+                            tags = {
+                              Name = "bastion_host"
+                            }
+                          }
+                          
+                          
+                          
+**Step - 9:** Now, we run our terraform code. For doing so, we first run the command **terraform init**. This will download the necessary plugins.
+ 
+ ![](/ct3/init.png)
+ 
+ 
+ Then, we run the command **terraform apply --auto-approve**. This will run the code and create the mentioned resources on the configured AWS Cloud.
+ 
+ ![](ct3/apply1.png)
+ 
+  Soon, we see that all our resources are added !!
+ 
+ 
+ ![](/ct3/done.png)
+ 
+ 
+ 
+  We can access our Wordpress site using the Public IP address that is mentioned in the instance description.
+ 
+ ![](/ct3/wp.png)
+ 
+ Eureka !! We did it !!
+ 
+We successfully launched a Web Portal for our company with a dedicated Database Server that can be accessed only by the Wordpress, facilitating the security of our content.
+
+Now sit back & congratulate yourself for doing this !!
+
+![](/ct3/congrats.jpg)
