@@ -351,10 +351,10 @@ A security group acts as a virtual firewall for your EC2 instances to control in
             }
           }
 
-          resource "aws_route_table_association" "vp_private_subnet_for_rt_association" {
-            depends_on = [aws_route_table.vp_private_subnet_for_rt]
+          resource "aws_route_table_association" "sp_private_subnet_for_rt_association" {
+            depends_on = [aws_route_table.sp_private_subnet_for_rt]
             subnet_id      = aws_subnet.sparsh_private_subnet.id
-            route_table_id = aws_route_table.vp_private_subnet_for_rt.id
+            route_table_id = aws_route_table.sp_private_subnet_for_rt.id
           }
               
  
@@ -446,3 +446,5 @@ We successfully launched a Web Portal for our company with a dedicated Database 
 Now sit back & congratulate yourself for doing this !!
 
 ![](/ct3/congrats.jpg)
+
+
