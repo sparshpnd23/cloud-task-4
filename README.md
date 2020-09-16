@@ -281,10 +281,9 @@ A security group acts as a virtual firewall for your EC2 instances to control in
  **Bastion Host for this security group-**
  
          resource "aws_security_group" "bastion_host_sql_only" {
-                depends_on=[aws_subnet.vishnu_public_subnet]
+                depends_on=[aws_subnet.sparsh_public_subnet]
                 name        = "bastion_with_ssh_only"
-                description = "It allows bastion host with ssh only"
-                vpc_id      =  aws_vpc.vishnu_vpc.id
+                vpc_id      =  aws_vpc.sparsh_vpc.id
 
 
 
